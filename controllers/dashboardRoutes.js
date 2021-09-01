@@ -1,22 +1,30 @@
 const router = require("express").Router();
-const { Post } = require("../models");
+const { Post } = require("../models/");
 const withAuth = require("../utils/auth");
 
 router.get("/", withAuth, (req, res) => {
     Post.findAll({
-        where: {
-            userId: req.session.userId
-        }
-    }).then(dbPostData => {
-        const posts = dbPostData.map((post) => post.get({ plain: true }));
+            where: {
+                userId: req.session.userId
+            }
+        })
+        .then(dbPostData => {
+            const posts = dbPostData.map((post) => post.get({ plain: true }));
 
-        res.render("all-post-admin", {
-            layout: "dashboard",
-            posts
+            res.render("all-posts-admin", {
+                layout: "dashboard",
+                posts
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            res.redirect("login");
         });
-    }).catch(err => {
-        console.log(err);
-        res.redirect("login");
+});
+
+router.get("/new", withAuth, (req, res) => {
+    res.render("new-post", {
+        layout: "dashboard"
     });
 });
 
